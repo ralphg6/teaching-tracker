@@ -1,0 +1,26 @@
+{
+  "name": "teaching-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon -w index.js index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ralphg6/teaching-tracker.git"
+  },
+  "author": "Raphael Pinto (ralphg6)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ralphg6/teaching-tracker/issues"
+  },
+  "homepage": "https://github.com/ralphg6/teaching-tracker#readme",
+  "dependencies": {
+    "googleapis": "^60.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
