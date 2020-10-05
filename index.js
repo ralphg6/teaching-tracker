@@ -262,8 +262,8 @@ function printSubmissions(submissions) {
     });
 }
 
-async function analizeTasks(course) {
-    const tasksAnalize = {};
+async function analyzeTasks(course) {
+    const tasksAnalyze = {};
 
     course.tasks.forEach(task => {
         if (task.submissions.length !== 1) {
@@ -274,15 +274,15 @@ async function analizeTasks(course) {
 
         const updateDate = submission.updateTime ? submission.updateTime.split('T')[0] : "WITHOUT_DATE";
 
-        if (!tasksAnalize[submission.state]) tasksAnalize[submission.state] = {};
-        if (!tasksAnalize[submission.state][updateDate]) tasksAnalize[submission.state][updateDate] = [];
+        if (!tasksAnalyze[submission.state]) tasksAnalyze[submission.state] = {};
+        if (!tasksAnalyze[submission.state][updateDate]) tasksAnalyze[submission.state][updateDate] = [];
 
-        tasksAnalize[submission.state][updateDate].push(task);
+        tasksAnalyze[submission.state][updateDate].push(task);
     });
 
-    // console.log("tasksAnalize", tasksAnalize);
+    // console.log("tasksAnalyze", tasksAnalyze);
 
-    course.tasksAnalize = tasksAnalize;
+    course.tasksAnalyze = tasksAnalyze;
 }
 
 const {
@@ -299,61 +299,61 @@ if (STUDENT === 'default') {
 }
 
 
-function analizesPerDate(courses) {
-    const analizesPerDate = {};
+function analyzesPerDate(courses) {
+    const analyzesPerDate = {};
     for (const course of courses) {
-        for (const state in course.tasksAnalize) {
-            for (const date in course.tasksAnalize[state]) {
-                if (!analizesPerDate[date])
-                    analizesPerDate[date] = {};
-                if (!analizesPerDate[date][state])
-                    analizesPerDate[date][state] = [];
-                analizesPerDate[date][state] = analizesPerDate[date][state].concat(course.tasksAnalize[state][date]);
+        for (const state in course.tasksAnalyze) {
+            for (const date in course.tasksAnalyze[state]) {
+                if (!analyzesPerDate[date])
+                    analyzesPerDate[date] = {};
+                if (!analyzesPerDate[date][state])
+                    analyzesPerDate[date][state] = [];
+                analyzesPerDate[date][state] = analyzesPerDate[date][state].concat(course.tasksAnalyze[state][date]);
             }
         }
     }
 
-    const analizesPerDateSummary = {};
+    const analyzesPerDateSummary = {};
 
-    Object.keys(analizesPerDate).sort().reverse().map(date => {
-        analizesPerDateSummary[date] = {};
-        Object.keys(analizesPerDate[date]).map(state => {
-            analizesPerDateSummary[date][state] = analizesPerDate[date][state].length;
+    Object.keys(analyzesPerDate).sort().reverse().map(date => {
+        analyzesPerDateSummary[date] = {};
+        Object.keys(analyzesPerDate[date]).map(state => {
+            analyzesPerDateSummary[date][state] = analyzesPerDate[date][state].length;
         });
     });
 
-    writeJSON('analizesPerDateSummary.json', analizesPerDateSummary);
+    writeJSON('analyzesPerDateSummary.json', analyzesPerDateSummary);
 
-    return analizesPerDate;
+    return analyzesPerDate;
 }
 
-function analizesPerState(courses) {
-    const analizesPerState = {};
+function analyzesPerState(courses) {
+    const analyzesPerState = {};
     for (const course of courses) {
-        for (const state in course.tasksAnalize) {
-            if (!analizesPerState[state])
-                analizesPerState[state] = {};
-            for (const date in course.tasksAnalize[state]) {
-                if (!analizesPerState[state][date])
-                    analizesPerState[state][date] = [];
-                analizesPerState[state][date] = analizesPerState[state][date].concat(course.tasksAnalize[state][date]);
+        for (const state in course.tasksAnalyze) {
+            if (!analyzesPerState[state])
+                analyzesPerState[state] = {};
+            for (const date in course.tasksAnalyze[state]) {
+                if (!analyzesPerState[state][date])
+                    analyzesPerState[state][date] = [];
+                analyzesPerState[state][date] = analyzesPerState[state][date].concat(course.tasksAnalyze[state][date]);
             }
         }
     }
 
-    const analizesPerStateSummary = {};
+    const analyzesPerStateSummary = {};
 
-    Object.keys(analizesPerState).sort().reverse().map(state => {
-        analizesPerStateSummary[state] = { total: 0, dates: {}};
-        Object.keys(analizesPerState[state]).map(date => {
-            analizesPerStateSummary[state].total += analizesPerState[state][date].length;
-            analizesPerStateSummary[state].dates[date] = analizesPerState[state][date].length;
+    Object.keys(analyzesPerState).sort().reverse().map(state => {
+        analyzesPerStateSummary[state] = { total: 0, dates: {}};
+        Object.keys(analyzesPerState[state]).map(date => {
+            analyzesPerStateSummary[state].total += analyzesPerState[state][date].length;
+            analyzesPerStateSummary[state].dates[date] = analyzesPerState[state][date].length;
         });
     });
 
-    writeJSON('analizesPerStateSummary.json', analizesPerStateSummary);
+    writeJSON('analyzesPerStateSummary.json', analyzesPerStateSummary);
 
-    return analizesPerState;
+    return analyzesPerState;
 }
 
 const init = async () => {
@@ -361,14 +361,14 @@ const init = async () => {
     const courses = await fetchCourses();
 
     for (const course of courses) {
-        await analizeTasks(course);
+        await analyzeTasks(course);
     }
 
     printCourses(courses);
 
-    writeJSON('analizesPerState.json', analizesPerState(courses));
+    writeJSON('analyzesPerState.json', analyzesPerState(courses));
 
-    writeJSON('analizesPerDate.json', analizesPerDate(courses));
+    writeJSON('analyzesPerDate.json', analyzesPerDate(courses));
 
 }
 
