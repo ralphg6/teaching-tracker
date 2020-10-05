@@ -196,14 +196,14 @@ async function listSubmissions(courseId, pageToken) {
 }
 
 function writeJSON(path, json) {
-    if (!fs.existsSync(`_data/${STUDENT}`)){
-        fs.mkdirSync(`_data/${STUDENT}`, {recursive: true});
+    if (!fs.existsSync(`_data/${STUDENT}`)) {
+        fs.mkdirSync(`_data/${STUDENT}`, { recursive: true });
     }
     fs.writeFileSync(`_data/${STUDENT}/${path}`, JSON.stringify(json, null, 1));
 }
 
 function readJSON(path) {
-    if (!fs.existsSync(`_data/${STUDENT}`)){
+    if (!fs.existsSync(`_data/${STUDENT}`)) {
         throw new Error("The STUDENT was not created yet!");
     }
     return fs.readFileSync(`_data/${STUDENT}/${path}`);
@@ -288,16 +288,13 @@ async function analyzeTasks(course) {
 const {
     IS_OFFLINE = true,
     FORCE_UPDATE = false,
-    STUDENT='default',
+} = process.env;
+
+let {
+    STUDENT = 'default',
 } = process.env;
 
 const COURSES_PATH = "courses.json";
-
-if (STUDENT === 'default') {
-    console.error('The student is undefined! (Define STUDENT as env)')
-    exit();
-}
-
 
 function analyzesPerDate(courses) {
     const analyzesPerDate = {};
@@ -344,7 +341,7 @@ function analyzesPerState(courses) {
     const analyzesPerStateSummary = {};
 
     Object.keys(analyzesPerState).sort().reverse().map(state => {
-        analyzesPerStateSummary[state] = { total: 0, dates: {}};
+        analyzesPerStateSummary[state] = { total: 0, dates: {} };
         Object.keys(analyzesPerState[state]).map(date => {
             analyzesPerStateSummary[state].total += analyzesPerState[state][date].length;
             analyzesPerStateSummary[state].dates[date] = analyzesPerState[state][date].length;
@@ -357,6 +354,25 @@ function analyzesPerState(courses) {
 }
 
 const init = async () => {
+
+    if (STUDENT === 'default') {
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+        });
+
+        STUDENT = await new Promise((resolve) => {
+            rl.question("What is student name? ", (name) => {
+                rl.close();
+                resolve(name);
+            });
+        }) ;
+
+        if(!STUDENT || !STUDENT.length){
+            console.error('The student is undefined! (Define STUDENT as env)')
+            exit();
+        }
+    }
 
     const courses = await fetchCourses();
 
