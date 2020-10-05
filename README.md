@@ -12,6 +12,13 @@ npm install
 npm start
 ```
 
+## Environment Variables
+
+|Variable|Default|Description|
+|---|---|---|
+| STUDENT | `undefined` | The student's name to build the data folder name, and to avoid the question |
+| UPDATE | `false` | Force the data update from API| 
+
 ## Contributing
 
 Help me to build.

@@ -216,7 +216,7 @@ function existsJSON(path) {
 
 async function fetchCourses() {
 
-    if (FORCE_UPDATE || !IS_OFFLINE || !existsJSON(COURSES_PATH)) {
+    if (UPDATE || !existsJSON(COURSES_PATH)) {
         try {
             console.log("Fecth Courses in ONLINE mode");
 
@@ -285,16 +285,6 @@ async function analyzeTasks(course) {
     course.tasksAnalyze = tasksAnalyze;
 }
 
-const {
-    IS_OFFLINE = true,
-    FORCE_UPDATE = false,
-} = process.env;
-
-let {
-    STUDENT = 'default',
-} = process.env;
-
-const COURSES_PATH = "courses.json";
 
 function analyzesPerDate(courses) {
     const analyzesPerDate = {};
@@ -353,9 +343,19 @@ function analyzesPerState(courses) {
     return analyzesPerState;
 }
 
+const {
+    UPDATE = false,
+} = process.env;
+
+let {
+    STUDENT = undefined,
+} = process.env;
+
+const COURSES_PATH = "courses.json";
+
 const init = async () => {
 
-    if (STUDENT === 'default') {
+    if (!STUDENT) {
         const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
