@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/ralphg6/teaching-tracker#readme",
   "dependencies": {
+    "boolean": "^3.0.1",
     "googleapis": "^60.0.1"
   },
   "devDependencies": {

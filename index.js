@@ -2,6 +2,7 @@ const fs = require('fs');
 const readline = require('readline');
 const { google } = require('googleapis');
 const { exit } = require('process');
+const { boolean } = require("boolean");
 
 // If modifying these scopes, delete token.json.
 const SCOPES = [
@@ -109,7 +110,7 @@ async function listCourses(pageToken) {
             pageToken,
         })).data;
 
-        const courses = result.courses;
+        const courses = result.courses.filter(c => !isExcludedCourse(c.id));
 
         if (courses)
             resultList = resultList.concat(courses);
@@ -216,13 +217,14 @@ function existsJSON(path) {
 
 async function fetchCourses() {
 
-    if (UPDATE || !existsJSON(COURSES_PATH)) {
+    if (boolean(UPDATE) || !existsJSON(COURSES_PATH)) {
         try {
             console.log("Fecth Courses in ONLINE mode");
 
             const courseMap = {};
-            const courses = await listCourses();
+            const courses = (await listCourses()).filter(c => !isExcludedCourse(c.id));;
             for (const course of courses) {
+                if (isExcludedCourse(course.id)) continue;
                 courseMap[course.id] = course;
                 // console.log("course", course);
                 const tasks = await listTasks(course.id);
@@ -345,6 +347,7 @@ function analyzesPerState(courses) {
 
 const {
     UPDATE = false,
+    EXCLUDE_COURSES = "",
 } = process.env;
 
 let {
@@ -352,6 +355,10 @@ let {
 } = process.env;
 
 const COURSES_PATH = "courses.json";
+
+const EXCLUDED_COURSES = EXCLUDE_COURSES.split(',');
+
+const isExcludedCourse = (id) => EXCLUDED_COURSES.includes(id);
 
 const init = async () => {
 
@@ -374,7 +381,7 @@ const init = async () => {
         }
     }
 
-    const courses = await fetchCourses();
+    const courses = (await fetchCourses()).filter(c => !isExcludedCourse(c.id));
 
     for (const course of courses) {
         await analyzeTasks(course);
