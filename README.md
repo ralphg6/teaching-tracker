@@ -14,10 +14,12 @@ npm start
 
 ## Environment Variables
 
-|Variable|Default|Description|
-|---|---|---|
-| STUDENT | `undefined` | The student's name to build the data folder name, and to avoid the question |
-| UPDATE | `false` | Force the data update from API| 
+|Variable|Default|Example|Description|
+|---|---|---|---|
+| STUDENT | `undefined` | caleb | The student's name to build the data folder name, and to avoid the question |
+| UPDATE | `false` | true | Force the data update from API| 
+| BEGIN | `false` | 2020-10-01 | Begin date for reports| 
+| UNTIL | `false` | 2020-11-26 | End date for reports| 
 
 ## Contributing
 

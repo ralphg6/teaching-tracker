@@ -214,6 +214,9 @@ function existsJSON(path) {
     return fs.existsSync(`_data/${STUDENT}/${path}`);
 }
 
+function getUpdateDate(submission) {
+    return submission.updateTime ? submission.updateTime.split('T')[0] : "WITHOUT_DATE";
+}
 
 async function fetchCourses() {
 
@@ -274,12 +277,16 @@ async function analyzeTasks(course) {
         const submission = task.submissions[0];
         // console.log("task", task);
 
-        const updateDate = submission.updateTime ? submission.updateTime.split('T')[0] : "WITHOUT_DATE";
+        if (isIncludedSubmission(submission)){
+            const updateDate = getUpdateDate(submission);
 
-        if (!tasksAnalyze[submission.state]) tasksAnalyze[submission.state] = {};
-        if (!tasksAnalyze[submission.state][updateDate]) tasksAnalyze[submission.state][updateDate] = [];
+            if (!tasksAnalyze[submission.state]) tasksAnalyze[submission.state] = {};
+            if (!tasksAnalyze[submission.state][updateDate]) tasksAnalyze[submission.state][updateDate] = [];
+    
+            tasksAnalyze[submission.state][updateDate].push(task);
+        }
 
-        tasksAnalyze[submission.state][updateDate].push(task);
+        
     });
 
     // console.log("tasksAnalyze", tasksAnalyze);
@@ -348,6 +355,8 @@ function analyzesPerState(courses) {
 const {
     UPDATE = false,
     EXCLUDE_COURSES = "",
+    BEGIN = false,
+    UNTIL = false,
 } = process.env;
 
 let {
@@ -359,6 +368,13 @@ const COURSES_PATH = "courses.json";
 const EXCLUDED_COURSES = EXCLUDE_COURSES.split(',');
 
 const isExcludedCourse = (id) => EXCLUDED_COURSES.includes(id);
+
+const isIncludedSubmission = (submission) => {
+    const updateDate = getUpdateDate(submission);
+    if (BEGIN && updateDate !== "WITHOUT_DATE" && updateDate < BEGIN) return false;
+    if (UNTIL && updateDate !== "WITHOUT_DATE" && updateDate > UNTIL) return false;
+    return true;
+}
 
 const init = async () => {
 
@@ -389,11 +405,16 @@ const init = async () => {
 
     printCourses(courses);
 
+    //const today = new Date().
+
     writeJSON('analyzesPerState.json', analyzesPerState(courses));
 
-    writeJSON('analyzesPerDate.json', analyzesPerDate(courses));
+    const analyzesPerDateData = analyzesPerDate(courses);
+
+    writeJSON('analyzesPerDate.json', analyzesPerDateData);
 
 }
 
 
 init();
+
