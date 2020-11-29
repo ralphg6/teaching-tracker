@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon -w index.js index.js",
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,9 @@
     "googleapis": "^60.0.1"
   },
   "devDependencies": {
+    "eslint": "^7.14.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
     "nodemon": "^2.0.4"
   }
 }
